@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="yangge_com.myweather.MainActivity">
-<fragment
-    android:id="@+id/choose_area_fragment"
-    android:name="yangge_com.myweather.frament.ChooseAreaFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    tools:context="yangge_com.myweather.MainActivity"
+    >
+
+    <fragment
+        android:id="@+id/choose_area_fragment"
+        class="yangge_com.myweather.frament.ChooseAreaFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>

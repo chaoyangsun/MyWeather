@@ -2,9 +2,11 @@ package yangge_com.myweather.frament;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import yangge_com.myweather.R;
+import yangge_com.myweather.activity.WeatherActivity;
 import yangge_com.myweather.db.City;
 import yangge_com.myweather.db.Country;
 import yangge_com.myweather.db.Province;
@@ -51,11 +54,6 @@ public class ChooseAreaFragment extends Fragment {
     private City selectedCity;
     private int currentLevel;
 
-    public ChooseAreaFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,7 +61,7 @@ public class ChooseAreaFragment extends Fragment {
         title_text = view.findViewById(R.id.title_text);
         back_button = view.findViewById(R.id.back_button);
         list_view = view.findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_expandable_list_item_1, dataList);
         list_view.setAdapter(adapter);
         return view;
     }
@@ -80,14 +78,21 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(i);
                     queryCountrys();
+                }else if(currentLevel == LEVEL_COUNTRY) {
+                    String weatherId = countryList.get(i).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
+
         back_button.setOnClickListener(view -> {
             if(currentLevel == LEVEL_COUNTRY) {
                 queryCities();
             }else if(currentLevel == LEVEL_CITY) {
-                queryCountrys();
+                queryProvinces();
             }
         });
         queryProvinces();
@@ -125,7 +130,7 @@ public class ChooseAreaFragment extends Fragment {
             currentLevel = LEVEL_CITY;
         }else {
             int provinceCode = selectedProvince.getProvinceCode();
-            String address = "http://guolin.tech/api/china" + provinceCode;
+            String address = "http://guolin.tech/api/china" + "/" +provinceCode;
             queryFromServer(address, "city");
         }
 
@@ -147,12 +152,13 @@ public class ChooseAreaFragment extends Fragment {
         }else {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "http://guolin.tech/api/china" + provinceCode + "/" + cityCode;
+            String address = "http://guolin.tech/api/china" +"/" + provinceCode + "/" + cityCode;
             queryFromServer(address, "country");
         }
     }
 
     private void queryFromServer(String address, String type) {
+        Log.i("Http", " " + address);
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
@@ -167,7 +173,7 @@ public class ChooseAreaFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
-                if("prvince".equals(type)) {
+                if("province".equals(type)) {
                     result = Utility.handleProvinceResponse(responseText);
                 }else if("city".equals(type)) {
                     result = Utility.handleCityResponse(responseText, selectedProvince.getId());
