@@ -26,6 +26,7 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import yangge_com.myweather.MainActivity;
 import yangge_com.myweather.R;
 import yangge_com.myweather.activity.WeatherActivity;
 import yangge_com.myweather.db.City;
@@ -37,7 +38,7 @@ import yangge_com.myweather.util.Utility;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChooseAreaFragment extends Fragment {
+public class ChooseAreaFragment extends android.app.Fragment {
     public static final int LEVEL_PROVINE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTRY = 2;
@@ -80,10 +81,18 @@ public class ChooseAreaFragment extends Fragment {
                     queryCountrys();
                 }else if(currentLevel == LEVEL_COUNTRY) {
                     String weatherId = countryList.get(i).getWeatherId();
-                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
-                    intent.putExtra("weather_id", weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if(getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity) {
+                        WeatherActivity a = (WeatherActivity)getActivity();
+                        a.drawerlayout.closeDrawers();
+                        a.swipe_refresh.setRefreshing(false);
+                        a.requestWeather(weatherId);
+                    }
+
                 }
             }
         });

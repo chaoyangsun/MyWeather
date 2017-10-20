@@ -21,13 +21,13 @@
 
         <Button
             android:id="@+id/back_button"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
+            android:layout_width="35dp"
+            android:layout_height="25dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:textColor="#fff"
-            android:text="返回" />
+            android:background="@drawable/ic_back"
+            />
 
     </RelativeLayout>
 
